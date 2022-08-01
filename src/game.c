@@ -427,6 +427,16 @@ int player_cmp(void const *a, void const *b) {
     return ((player_t *)b)->score - ((player_t *)a)->score;
 }
 
+static void release_memory() {
+    for (int i = 0; i < PLAYER_NUM; i++) {
+        free(player[i].name);
+    }
+    for (int i = 0; i < total_card; i++) {
+        free(all_card_string[i]);
+    }
+    free(all_card_string);
+}
+
 static void end_game() {
     player_t rank[PLAYER_NUM];
     memcpy(rank, player, sizeof(player_t) * PLAYER_NUM);
@@ -434,8 +444,8 @@ static void end_game() {
     for (int i = 0; i < PLAYER_NUM; i++) {
         show_score(player[i].fd, rank);
         close(player[i].fd);
-        free(player[i].name);
     }
+    release_memory();
 }
 
 void run_game(int *player_fd) {
