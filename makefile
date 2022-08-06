@@ -4,8 +4,8 @@ SRC = src
 LIB = lib
 CFLAGS = -I$(INCLUDE)
 
-server: server.c $(LIB)/game.o $(LIB)/func.o
-	$(CC) server.c -o server $(LIB)/game.o $(LIB)/func.o $(CFLAGS)
+server: $(SRC)/server.c $(LIB)/game.o $(LIB)/func.o
+	$(CC) $(SRC)/server.c -o server $(LIB)/game.o $(LIB)/func.o $(CFLAGS)
 
 $(LIB)/game.o: $(SRC)/game.c $(INCLUDE)/game.h
 	@mkdir -p $(LIB)
