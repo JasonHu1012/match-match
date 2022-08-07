@@ -127,7 +127,7 @@ void write_to_file(char *path, char **card) {
     fclose(file);
 }
 
-bool check_extension(char *path) {
+bool valid_extension(char *path) {
     int extension_len = strlen(CARD_EXTENSION);
     int path_len = strlen(path);
     if (path_len < extension_len || strcmp(&path[path_len - extension_len], CARD_EXTENSION)) {
@@ -138,12 +138,17 @@ bool check_extension(char *path) {
 
 // draw card to file
 void draw(char *path) {
-    if (!check_extension(path)) {
-        fprintf(stderr, "warning: only file whose name ends with \"%s\" will be recognized\n", CARD_EXTENSION);
+    if (!valid_extension(path)) {
+        fprintf(stderr, "warning: only files whose name ends with \"%s\" will be recognized, continue? [y/n]\n", CARD_EXTENSION);
+        char reply[8];
+        fgets(reply, 8, stdin);
+        if (strcmp(reply, "y\n")) {
+            exit(0);
+        }
     }
     if (exist_file(path)) {
         // file exists, check whether to overwrite
-        printf("file exists, do you want to overwrite it? [y/n]\n");
+        fprintf(stderr, "file exists, do you want to overwrite it? [y/n]\n");
         char reply[8];
         fgets(reply, 8, stdin);
         if (strcmp(reply, "y\n")) {
@@ -151,7 +156,6 @@ void draw(char *path) {
         }
     }
     printf("please type in card content and press ^D when finished, redundant space will be removed\n");
-    printf("");
     // allocate
     char **card = (char **)salloc(sizeof(char), (int[]){ CARD_HEIGHT, CARD_WIDTH }, 2);
     for (int i = 0; i < CARD_HEIGHT; i++) {
