@@ -10,6 +10,7 @@
 
 #define BUFFER_HEIGHT 64
 #define BUFFER_WIDTH 64
+#define CARD_EXTENSION ".card"
 
 bool exist_file(char *path) {
     return access(path, F_OK) == 0;
@@ -126,8 +127,20 @@ void write_to_file(char *path, char **card) {
     fclose(file);
 }
 
+bool check_extension(char *path) {
+    int extension_len = strlen(CARD_EXTENSION);
+    int path_len = strlen(path);
+    if (path_len < extension_len || strcmp(&path[path_len - extension_len], CARD_EXTENSION)) {
+        return false;
+    }
+    return true;
+}
+
 // draw card to file
 void draw(char *path) {
+    if (!check_extension(path)) {
+        fprintf(stderr, "warning: only file whose name ends with \"%s\" will be recognized\n", CARD_EXTENSION);
+    }
     if (exist_file(path)) {
         // file exists, check whether to overwrite
         printf("file exists, do you want to overwrite it? [y/n]\n");
@@ -137,8 +150,8 @@ void draw(char *path) {
             exit(0);
         }
     }
-    printf("please type in card content and press ^D when finished\n");
-    printf("redundant space will be removed\n");
+    printf("please type in card content and press ^D when finished, redundant space will be removed\n");
+    printf("");
     // allocate
     char **card = (char **)salloc(sizeof(char), (int[]){ CARD_HEIGHT, CARD_WIDTH }, 2);
     for (int i = 0; i < CARD_HEIGHT; i++) {
