@@ -4,8 +4,14 @@ SRC = src
 LIB = lib
 CFLAGS = -I$(INCLUDE)
 
+all: server draw
+	@echo "finish compiling"
+
 server: $(SRC)/server.c $(LIB)/game.o $(LIB)/func.o
 	$(CC) $(SRC)/server.c -o server $(LIB)/game.o $(LIB)/func.o $(CFLAGS)
+
+draw: $(SRC)/draw.c $(LIB)/func.o
+	$(CC) $(SRC)/draw.c -o draw $(LIB)/func.o $(CFLAGS)
 
 $(LIB)/game.o: $(SRC)/game.c $(INCLUDE)/game.h
 	@mkdir -p $(LIB)
@@ -17,3 +23,4 @@ $(LIB)/func.o: $(SRC)/func.c $(INCLUDE)/func.h
 clean:
 	rm -rf lib
 	rm -rf server
+	rm -rf draw
