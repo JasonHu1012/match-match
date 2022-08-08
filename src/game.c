@@ -87,8 +87,9 @@ static void read_card(char *dir_path, int *index) {
         }
         // recursively read cards in directory
         if (entry->d_type == DT_DIR) {
-            sprintf(buffer, "%s/%s", dir_path, entry->d_name);
-            read_card(buffer, index);
+            char path[BUFFER_LEN];
+            sprintf(path, "%s/%s", dir_path, entry->d_name);
+            read_card(path, index);
             continue;
         }
         if (entry->d_type == DT_REG) {
