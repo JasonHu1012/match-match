@@ -202,7 +202,7 @@ void write_waiting_message(int player_fd, int count) {
     sprintf(buffer, "player number: %d/%d", count, PLAYER_NUM);
     int ret = write(player_fd, buffer, strlen(buffer));
     if (ret == -1) {
-        ERR_EXIT("message (wait for other player to join)");
+        ERR_EXIT("message (wait for other players to join)");
     }
 }
 
@@ -255,10 +255,10 @@ static void prepare_game(int *player_fd) {
                 player[order[i]].name = (char *)malloc(sizeof(char) * len);
                 strncpy(player[order[i]].name, buffer, len);
                 player[order[i]].score = 0;
-                sprintf(buffer, "waiting for other players...");
+                sprintf(buffer, "waiting for other players to type nickname...");
                 ret = write(player_fd[i], buffer, strlen(buffer));
                 if (ret == -1) {
-                    ERR_EXIT("message (wait for other player to type in nickname)");
+                    ERR_EXIT("message (wait for other players to type in nickname)");
                 }
                 ready_player++;
             }
@@ -283,6 +283,11 @@ static void show_card(int player_fd, int card_index) {
     int ret = write(player_fd, card[card_index].content, strlen(card[card_index].content));
     if (ret == -1) {
         ERR_EXIT("show card");
+    }
+    sprintf(buffer, "                 card %d\n", card_index + 1);
+    ret = write(player_fd, buffer, strlen(buffer));
+    if (ret == -1) {
+        ERR_EXIT("show card number");
     }
 }
 
@@ -346,6 +351,14 @@ static void start_game() {
                 clear_screen(player[j].fd);
                 show_information(j);
                 show_table(player[j].fd);
+                if (j != current_player) {
+                    // tell other players who current player is
+                    sprintf(buffer, "%s's turn\n", player[current_player].name);
+                    int ret = write(player[j].fd, buffer, strlen(buffer));
+                    if (ret == -1) {
+                        ERR_EXIT("message (other player's turn)");
+                    }
+                }
             }
             int choose = choose_card(player[current_player].fd) - 1;
             pick[i] = choose;
@@ -403,8 +416,8 @@ static void start_game() {
                 strncpy(&table[row + 3][col + 2], "    ", 4);
                 strncpy(&table[row + 4][col + 2], "    ", 4);
             }
+            current_player = (current_player + 1) % PLAYER_NUM;
         }
-        current_player = (current_player + 1) % PLAYER_NUM;
     }
 }
 
